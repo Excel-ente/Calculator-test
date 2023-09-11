@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-f_7j+nblg!c6w4*l7+&6ebfa+_zi0-ce*jha&%e@orm5$ea_*c
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CSRF_TRUSTED_ORIGINS = ['https://calculadoradecosto.online']
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'fabrica',
     'administracion',
     'inventario',
-
     'import_export',
 ]
 
