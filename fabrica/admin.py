@@ -70,7 +70,7 @@ class IngredienteRecetaInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "producto":
             # Filtra los ingredientes para mostrar solo los creados por el usuario actual
-            kwargs["queryset"] = Insumo.objects.filter(user=request.user)
+            kwargs["queryset"] = Insumo.objects.filter(USER=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)   
 
     # Agrega un filtro personalizado similar al de gastosAdicionalesInline
