@@ -66,6 +66,11 @@ class IngredienteRecetaInline(admin.TabularInline):
     readonly_fields = ('medida_uso',)
     fields = ('producto', 'cantidad','medida_uso')
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "adicional":
+            kwargs["queryset"] = ingredientereceta.objects.filter(USER=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)   
+    
 class gastosAdicionalesInline(admin.TabularInline):
     model = adicionalreceta
     extra = 1
