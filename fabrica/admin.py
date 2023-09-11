@@ -60,7 +60,21 @@ class InsumoAdmin(ImportExportModelAdmin):
             obj.USER = request.user.username
         super().save_model(request, obj, form, change)
  
- 
+    class InsumoProveedorFilter(admin.SimpleListFilter):
+        title = 'Proveedor del insumo'
+        parameter_name = 'proveedor'
+
+        def lookups(self, request, model_admin):
+            # Obtén la lista de proveedores que tienen insumos asociados al usuario actual
+            proveedores = model_admin.model.objects.filter(USER=request.user).values_list('PROVEEDOR', flat=True).distinct()
+            return [(proveedor, proveedor) for proveedor in proveedores]
+
+        def queryset(self, request, queryset):
+            if self.value():
+                return queryset.filter(PROVEEDOR=self.value())
+
+    list_filter = ('PROVEEDOR', InsumoProveedorFilter,)
+
 class IngredienteRecetaInline(admin.TabularInline):
     model = ingredientereceta
     extra = 1
