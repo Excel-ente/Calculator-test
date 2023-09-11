@@ -203,7 +203,7 @@ JAZZMIN_SETTINGS = {
     "hide_apps": ['auth','inventario','ventas','compras'],
 
     # Hide these models when generating side menu (e.g auth.user)
-    "hide_models": ['fabrica.orden',],
+    "hide_models": ['fabrica.orden','administracion.Cliente'],
 
     # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
     "order_with_respect_to": [],
