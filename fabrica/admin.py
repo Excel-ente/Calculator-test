@@ -8,6 +8,7 @@
 
 from django.contrib import admin
 from fabrica.models import *
+from .models import Proveedor
 from import_export.admin import ImportExportModelAdmin
 from administracion.Funciones import Actualizar
 from administracion.Reporte import generar_presupuesto
@@ -60,21 +61,12 @@ class InsumoAdmin(ImportExportModelAdmin):
             obj.USER = request.user.username
         super().save_model(request, obj, form, change)
  
-    class InsumoProveedorFilter(admin.SimpleListFilter):
-        title = 'Proveedor del insumo'
-        parameter_name = 'proveedor'
-
-        def lookups(self, request, model_admin):
-            # Obtén la lista de proveedores que tienen insumos asociados al usuario actual
-            proveedores = model_admin.model.objects.filter(USER=request.user).values_list('PROVEEDOR', flat=True).distinct()
-            return [(proveedor, proveedor) for proveedor in proveedores]
-
-        def queryset(self, request, queryset):
-            if self.value():
-                return queryset.filter(PROVEEDOR=self.value())
-
-    list_filter = ('PROVEEDOR', InsumoProveedorFilter,)
-
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "PROVEEDOR":
+            # Filtra las opciones de categoría para mostrar solo las creadas por el usuario actual
+            kwargs["queryset"] = Proveedor.objects.filter(USER=request.user)
+            kwargs["empty_label"] = "Seleccione una Proveedor"  # Opcional: muestra un mensaje predeterminado
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 class IngredienteRecetaInline(admin.TabularInline):
     model = ingredientereceta
     extra = 1
