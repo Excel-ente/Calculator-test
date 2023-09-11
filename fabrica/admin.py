@@ -60,17 +60,34 @@ class InsumoAdmin(ImportExportModelAdmin):
             obj.USER = request.user.username
         super().save_model(request, obj, form, change)
  
+ 
 class IngredienteRecetaInline(admin.TabularInline):
     model = ingredientereceta
     extra = 1
     readonly_fields = ('medida_uso',)
-    fields = ('producto', 'cantidad','medida_uso')
+    fields = ('producto', 'cantidad', 'medida_uso')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "adicional":
-            kwargs["queryset"] = ingredientereceta.objects.filter(USER=request.user)
+        if db_field.name == "producto":
+            # Filtra los ingredientes para mostrar solo los creados por el usuario actual
+            kwargs["queryset"] = Insumo.objects.filter(user=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)   
-    
+
+    # Agrega un filtro personalizado similar al de gastosAdicionalesInline
+    class IngredienteRecetaUsuarioFilter(admin.SimpleListFilter):
+        title = 'Usuario que creó el insumo'
+        parameter_name = 'user'
+
+        def lookups(self, request, model_admin):
+            # Obtén la lista de usuarios que han creado ingredientes
+            users = Insumo.objects.filter(user=request.user).values_list('user__id', 'user__username').distinct()
+            return [(user_id, username) for user_id, username in users]
+
+        def queryset(self, request, queryset):
+            if self.value():
+                return queryset.filter(producto__user__id=self.value())
+
+
 class gastosAdicionalesInline(admin.TabularInline):
     model = adicionalreceta
     extra = 1
